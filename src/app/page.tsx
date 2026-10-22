@@ -1,69 +1,220 @@
-import Image from "next/image";
+
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Truck,
+  UserRound,
+  LockKeyhole,
+  Eye,
+  EyeOff,
+  ScanFace,
+  ArrowRight,
+  ShieldCheck,
+} from "lucide-react";
 
 export default function Home() {
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage("A autenticação será implementada na próxima etapa.");
+  }
+
+  function handleBiometrics() {
+    setMessage("A autenticação biométrica será configurada posteriormente.");
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#0B1424] px-4 py-8 sm:px-6">
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute -left-40 -top-40 -z-0 size-96 rounded-full bg-sky-600/20 blur-[100px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 -z-0 size-96 rounded-full bg-blue-800/20 blur-[100px]" />
+
+      <div className="relative z-10 w-full max-w-[440px]">
+        {/* Brand */}
+        <header className="mb-7 flex flex-col items-center text-center text-white">
+          <div className="mb-3.5 flex size-[72px] items-center justify-center rounded-[22px] border border-white/15 bg-gradient-to-br from-sky-500 to-sky-800 shadow-xl shadow-sky-950/40">
+            <Truck size={36} strokeWidth={1.8} />
+          </div>
+
+          <h1 className="text-[29px] font-bold tracking-tight">
+            FastTrack
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-1 text-sm text-slate-300">
+            Pátio Inteligente
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          <div className="mt-4 flex items-center gap-2 text-[11px] tracking-wide text-slate-300">
+            <span className="size-2 rounded-full bg-emerald-400" />
+            Gestão logística simplificada
+          </div>
+        </header>
+
+        {/* Login card */}
+        <section className="rounded-3xl border border-white/60 bg-white p-6 shadow-2xl shadow-black/25 sm:p-8">
+          <div className="mb-7">
+            <span className="text-[10px] font-bold tracking-[1.5px] text-sky-700">
+              ACESSO À PLATAFORMA
+            </span>
+
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
+              Bem-vindo de volta
+            </h2>
+
+            <p className="mt-2 text-sm leading-relaxed text-slate-500">
+              Entre para acompanhar suas operações.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-5"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {/* Identifier */}
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="identifier"
+                className="text-[13px] font-semibold text-slate-700"
+              >
+                CPF ou e-mail
+              </label>
+
+              <div className="flex h-[50px] items-center gap-3 rounded-xl border border-slate-300 px-3.5 text-slate-500 transition focus-within:border-sky-600 focus-within:ring-4 focus-within:ring-sky-600/10">
+                <UserRound size={19} />
+
+                <input
+                  id="identifier"
+                  type="text"
+                  autoComplete="username"
+                  placeholder="Digite seu CPF ou e-mail"
+                  value={identifier}
+                  onChange={(event) => setIdentifier(event.target.value)}
+                  required
+                  className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-slate-900 outline-none placeholder:text-slate-400"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="password"
+                className="text-[13px] font-semibold text-slate-700"
+              >
+                Senha
+              </label>
+
+              <div className="flex h-[50px] items-center gap-3 rounded-xl border border-slate-300 px-3.5 text-slate-500 transition focus-within:border-sky-600 focus-within:ring-4 focus-within:ring-sky-600/10">
+                <LockKeyhole size={19} />
+
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="Digite sua senha"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                  className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-slate-900 outline-none placeholder:text-slate-400"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  className="rounded-md p-1 transition hover:text-sky-700 focus-visible:outline-2 focus-visible:outline-sky-600"
+                >
+                  {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="-mt-2 flex justify-end">
+              <Link
+                href="/recuperar-senha"
+                className="text-xs font-semibold text-sky-700 hover:text-sky-900 hover:underline"
+              >
+                Esqueci minha senha
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              className="flex min-h-[50px] w-full items-center justify-center gap-2.5 rounded-xl bg-sky-700 px-4 text-sm font-bold text-white transition hover:bg-sky-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 active:scale-[0.99]"
+            >
+              Entrar na plataforma
+              <ArrowRight size={18} />
+            </button>
+          </form>
+
+          {/* Biometric alternative */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-[10px] font-semibold tracking-wider text-slate-400">
+              OU ACESSE COM
+            </span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleBiometrics}
+            className="flex min-h-[76px] w-full items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 p-3 text-left transition hover:border-sky-300 hover:bg-sky-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-800">
+              <ScanFace size={27} />
+            </span>
+
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-xs font-bold text-sky-950">
+                Autenticação biométrica
+              </span>
+              <span className="text-[10px] leading-relaxed text-slate-600">
+                Use a autenticação segura do seu dispositivo
+              </span>
+            </span>
+
+            <ArrowRight size={18} className="shrink-0 text-sky-700" />
+          </button>
+
+          {message && (
+            <p
+              role="status"
+              className="mt-4 rounded-lg bg-amber-50 p-3 text-xs leading-relaxed text-amber-900"
+            >
+              {message}
+            </p>
+          )}
+
+          <div className="mt-7 flex flex-wrap justify-center gap-1.5 text-xs">
+            <span className="text-slate-500">Não tem uma conta?</span>
+            <Link
+              href="/cadastro"
+              className="font-semibold text-sky-700 hover:underline"
+            >
+              Cadastre-se
+            </Link>
+          </div>
+
+          <div className="mt-6 flex items-center justify-center gap-2 border-t border-slate-100 pt-5 text-[11px] text-slate-400">
+            <ShieldCheck size={16} />
+            <span>Seu acesso merece segurança.</span>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[10px] text-slate-400">
+          <span className="font-bold tracking-[1.4px]">FASTTRACK</span>
+          <span className="text-sky-500">•</span>
+          <span>Gestão inteligente de pátios</span>
+        </footer>
+      </div>
+    </main>
   );
 }
