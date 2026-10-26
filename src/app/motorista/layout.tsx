@@ -10,9 +10,11 @@ export default function DriverLayout({
   return (
     <>
       <DriverHeader />
+
       <div className="min-h-dvh bg-slate-50 pb-28">
         {children}
       </div>
+
       <DriverNavbar />
     </>
   );

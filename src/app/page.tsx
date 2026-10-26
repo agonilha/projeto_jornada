@@ -1,6 +1,6 @@
-
 "use client";
-
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -14,16 +14,70 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+
+
 export default function Home() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage("A autenticação será implementada na próxima etapa.");
+const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
+  setMessage("");
+
+  const email = identifier.trim().toLowerCase();
+
+  if (!email || !password) {
+    setMessage("Preencha o e-mail e a senha.");
+    return;
   }
+
+  try {
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (!result || result.error) {
+      setMessage("E-mail ou senha inválidos.");
+      return;
+    }
+
+    const response = await fetch("/api/auth/session");
+    const session = await response.json();
+
+    switch (session?.user?.role) {
+      case "ADMIN":
+        router.push("/admin");
+        break;
+      case "PORTEIRO":
+        router.push("/porteiro");
+        break;
+
+      case "MOTORISTA":
+        router.push("/motorista");
+        break;
+
+      case "SUPERVISOR":
+        router.push("/supervisor");
+        break;
+
+      default:
+        setMessage(
+          "Não foi possível identificar o perfil do usuário."
+        );
+    }
+  } catch {
+    setMessage(
+      "Não foi possível realizar o login. Tente novamente."
+    );
+  }
+};
 
   function handleBiometrics() {
     setMessage("A autenticação biométrica será configurada posteriormente.");
@@ -82,7 +136,7 @@ export default function Home() {
                 htmlFor="identifier"
                 className="text-[13px] font-semibold text-slate-700"
               >
-                CPF ou e-mail
+                E-mail
               </label>
 
               <div className="flex h-[50px] items-center gap-3 rounded-xl border border-slate-300 px-3.5 text-slate-500 transition focus-within:border-sky-600 focus-within:ring-4 focus-within:ring-sky-600/10">
@@ -90,9 +144,9 @@ export default function Home() {
 
                 <input
                   id="identifier"
-                  type="text"
+                  type="email"
                   autoComplete="username"
-                  placeholder="Digite seu CPF ou e-mail"
+                  placeholder="Digite seu e-mail"
                   value={identifier}
                   onChange={(event) => setIdentifier(event.target.value)}
                   required

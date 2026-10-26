@@ -6,3 +6,121 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  ADMIN
+  PORTEIRO
+  MOTORISTA
+  SUPERVISOR
+}
+
+enum MovementStatus {
+  NO_PATIO
+  EM_CARREGAMENTO
+  FINALIZADA
+}
+
+enum MovementType {
+  ENTRADA
+  SAIDA
+}
+
+enum ShipmentStatus {
+  PEDIDO_RECEBIDO
+  EM_SEPARACAO
+  AGUARDANDO_CARREGAMENTO
+  EM_CARREGAMENTO
+  FINALIZADA
+  CANCELADA
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  driverProfile DriverProfile?
+  movements     YardMovement[] @relation("MovementCreatedBy")
+  shipments Shipment[] @relation("ShipmentDriver")
+}
+
+model Vehicle {
+  id        String   @id @default(cuid())
+  plate     String   @unique
+  model     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  driverProfile DriverProfile?
+  movements     YardMovement[]
+  shipments Shipment[]
+}
+
+model DriverProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  vehicleId String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+}
+
+model Yard {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  movements YardMovement[]
+  shipments Shipment[]
+}
+
+model YardMovement {
+  id          String         @id @default(cuid())
+  vehicleId   String
+  yardId      String
+  createdById String
+  status      MovementStatus @default(NO_PATIO)
+  entryAt     DateTime       @default(now())
+  exitAt      DateTime?
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  yard      Yard    @relation(fields: [yardId], references: [id])
+  createdBy User    @relation("MovementCreatedBy", fields: [createdById], references: [id])
+
+  @@index([vehicleId])
+  @@index([yardId, status])
+  @@index([entryAt])
+}
+
+model Shipment {
+  id              String         @id @default(cuid())
+  description     String
+  driverId        String
+  vehicleId       String
+  yardId          String
+  status          ShipmentStatus @default(PEDIDO_RECEBIDO)
+  loadingProgress Int            @default(0)
+  scheduledAt     DateTime
+  notes           String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  driver  User    @relation("ShipmentDriver", fields: [driverId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  yard    Yard    @relation(fields: [yardId], references: [id])
+
+  @@index([driverId, status])
+  @@index([yardId, status])
+  @@index([scheduledAt])
+}
