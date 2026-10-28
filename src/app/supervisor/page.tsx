@@ -26,7 +26,7 @@ export default async function SupervisorPage() {
           </p>
         </header>
 
-        <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="mt-6 grid gap-4 sm:grid-cols-2 text-slate-600 lg:grid-cols-3">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h2 className="font-semibold">Movimentações</h2>
             <p className="mt-2 text-sm text-slate-600">
@@ -34,14 +34,14 @@ export default async function SupervisorPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="rounded-2xl bg-white p-5 text-slate-600 shadow-sm">
             <h2 className="font-semibold">Indicadores</h2>
             <p className="mt-2 text-sm text-slate-600">
               Consulte os indicadores operacionais.
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="rounded-2xl bg-white text-slate-600 p-5 shadow-sm">
             <h2 className="font-semibold">Equipe</h2>
             <p className="mt-2 text-sm text-slate-600">
               Área de acompanhamento da equipe.

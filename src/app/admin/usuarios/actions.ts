@@ -143,3 +143,46 @@ export async function createUser(
 
   redirect("/admin/usuarios?cadastro=sucesso");
 }
+export async function toggleUserStatus(userId: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    throw new Error("Você precisa estar autenticado.");
+  }
+
+  const currentRole = session.user.role;
+
+  if (currentRole !== "ADMIN" && currentRole !== "SUPERVISOR") {
+    throw new Error("Você não tem permissão para alterar usuários.");
+  }
+
+  if (!userId || typeof userId !== "string") {
+    throw new Error("Usuário inválido.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, isActive: true, role: true },
+  });
+
+  if (!user) {
+    throw new Error("Usuário não encontrado.");
+  }
+
+  // Supervisores só podem gerenciar usuários com perfil de porteiro.
+  if (currentRole === "SUPERVISOR" && user.role !== "PORTEIRO") {
+    throw new Error("Você não tem permissão para alterar esse usuário.");
+  }
+
+  // Impede que o usuário desative a própria conta.
+  if (user.id === session.user.id) {
+    throw new Error("Você não pode desativar sua própria conta.");
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: !user.isActive },
+  });
+
+  revalidatePath("/admin/usuarios");
+}
