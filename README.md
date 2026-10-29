@@ -18,6 +18,11 @@ wsl --install
 
 Abra a Microsoft Store e faça o download do Docker Desktop.
 Ao abrir o aplicativo, a _engine_ vai iniciar.
+Após isso, deixe o container rodando com o comando:
+
+```pwsh
+docker compose up -d
+```
 
 ## Instalando o npm
 
