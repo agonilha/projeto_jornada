@@ -24,3 +24,37 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Estilos do leitor de QR Code da portaria */
+
+#leitor-qr-porteiro {
+  color: #334155;
+}
+
+#leitor-qr-porteiro button {
+  color: #ffffff !important;
+  background-color: #0369a1 !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#leitor-qr-porteiro button:hover {
+  background-color: #075985 !important;
+}
+
+#leitor-qr-porteiro a {
+  color: #0369a1 !important;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+#leitor-qr-porteiro select {
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+}

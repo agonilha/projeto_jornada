@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import prisma from "../src/lib/prisma";
 
 async function main() {
-  const email = "admin@fasttrack.com";
+  const email = "adminn@fasttrack.com";
   const password = "teste123";
   const hashedPassword = await bcrypt.hash(password, 12);
 
