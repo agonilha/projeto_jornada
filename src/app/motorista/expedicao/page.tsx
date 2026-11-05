@@ -1,3 +1,4 @@
+import AutoRefreshExpedicao from "@/components/motorista/AutoRefreshExpedicao";
 import ShipmentProgress from "@/components/motorista/ShipmentProgress";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -63,6 +64,7 @@ export default async function ExpedicaoMotoristaPage() {
 
   return (
     <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+      <AutoRefreshExpedicao />
       <Link
         href="/motorista"
         className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-sky-700"
