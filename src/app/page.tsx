@@ -1,7 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Truck,
@@ -12,6 +12,7 @@ import {
   ScanFace,
   ArrowRight,
   ShieldCheck,
+  X,
 } from "lucide-react";
 
 
@@ -23,64 +24,93 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-const handleSubmit = async (
-  event: React.FormEvent<HTMLFormElement>
-) => {
-  event.preventDefault();
-  setMessage("");
+  const [biometricOpen, setBiometricOpen] = useState(false);
+  const [biometricStep, setBiometricStep] = useState<
+    "idle" | "scanning" | "success"
+    >("idle");
 
-  const email = identifier.trim().toLowerCase();
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    setMessage("");
 
-  if (!email || !password) {
-    setMessage("Preencha o e-mail e a senha.");
-    return;
-  }
+    const email = identifier.trim().toLowerCase();
 
-  try {
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (!result || result.error) {
-      setMessage("E-mail ou senha inválidos.");
+    if (!email || !password) {
+      setMessage("Preencha o e-mail e a senha.");
       return;
     }
 
-    const response = await fetch("/api/auth/session");
-    const session = await response.json();
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    switch (session?.user?.role) {
-      case "ADMIN":
-        router.push("/admin");
-        break;
-      case "PORTEIRO":
-        router.push("/porteiro");
-        break;
+      if (!result || result.error) {
+        setMessage("E-mail ou senha inválidos.");
+        return;
+      }
 
-      case "MOTORISTA":
-        router.push("/motorista");
-        break;
+      const response = await fetch("/api/auth/session");
+      const session = await response.json();
 
-      case "SUPERVISOR":
-        router.push("/supervisor");
-        break;
+      switch (session?.user?.role) {
+        case "ADMIN":
+          router.push("/admin");
+          break;
+        case "PORTEIRO":
+          router.push("/porteiro");
+          break;
 
-      default:
-        setMessage(
-          "Não foi possível identificar o perfil do usuário."
-        );
+        case "MOTORISTA":
+          router.push("/motorista");
+          break;
+
+        case "SUPERVISOR":
+          router.push("/supervisor");
+          break;
+
+        default:
+          setMessage(
+            "Não foi possível identificar o perfil do usuário."
+          );
+      }
+    } catch {
+      setMessage(
+        "Não foi possível realizar o login. Tente novamente."
+      );
     }
-  } catch {
-    setMessage(
-      "Não foi possível realizar o login. Tente novamente."
-    );
-  }
-};
+  };
 
-  function handleBiometrics() {
-    setMessage("A autenticação biométrica será configurada posteriormente.");
+  function handleBiometrics() { 
+    setMessage("");
+    setBiometricOpen(true);
+    setBiometricStep("idle");
+  }
+
+  function startBiometricScan() {
+    setBiometricStep("scanning");
+
+    setTimeout(() => {
+      setBiometricStep("success");
+    }, 2000);
+  }
+
+  function closeBiometricModal() {
+    setBiometricOpen(false);
+    setBiometricStep("idle");
+  }
+
+  function continueWithBiometrics() {
+    setBiometricOpen(false);
+
+    // Ajuste como preferir no MVP:
+    // router.push("/motorista");
+    // ou "/supervisor", "/porteiro", etc.
+    router.push("/motorista");
   }
 
   return (
@@ -269,6 +299,109 @@ const handleSubmit = async (
           <span>Gestão inteligente de pátios</span>
         </footer>
       </div>
+      {biometricOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold tracking-[1.5px] text-sky-700">
+                  ACESSO BIOMÉTRICO
+                </p>
+                <h2 className="mt-1 text-xl font-bold text-slate-900">
+                  Autenticação facial
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeBiometricModal}
+                aria-label="Fechar"
+                className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mt-6 flex flex-col items-center text-center">
+              <div
+                className={`flex size-28 items-center justify-center rounded-full border-8 ${
+                  biometricStep === "success"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : biometricStep === "scanning"
+                      ? "border-sky-200 bg-sky-50 text-sky-700"
+                      : "border-slate-200 bg-slate-50 text-sky-700"
+                }`}
+              >
+                <ScanFace
+                  size={54}
+                  className={biometricStep === "scanning" ? "animate-pulse" : ""}
+                />
+              </div>
+
+              {biometricStep === "idle" && (
+                <>
+                  <h3 className="mt-6 text-lg font-bold text-slate-900">
+                    Pronto para autenticar
+                  </h3>
+                  <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
+                    Posicione seu rosto em frente à câmera do dispositivo para
+                    iniciar a autenticação biométrica.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={startBiometricScan}
+                    className="mt-6 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-sky-700 px-4 text-sm font-bold text-white transition hover:bg-sky-800"
+                  >
+                    <ScanFace size={18} />
+                    Iniciar leitura facial
+                  </button>
+                </>
+              )}
+
+              {biometricStep === "scanning" && (
+                <>
+                  <h3 className="mt-6 text-lg font-bold text-slate-900">
+                    Lendo biometria...
+                  </h3>
+                  <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
+                    Aguarde enquanto validamos sua biometria facial.
+                  </p>
+
+                  <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-full w-full animate-pulse rounded-full bg-sky-600" />
+                  </div>
+                </>
+              )}
+
+              {biometricStep === "success" && (
+                <>
+                  <h3 className="mt-6 text-lg font-bold text-emerald-700">
+                    Biometria validada com sucesso
+                  </h3>
+                  <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
+                    Autenticação simulada concluída com sucesso no MVP.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={continueWithBiometrics}
+                    className="mt-6 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-bold text-white transition hover:bg-emerald-700"
+                  >
+                    Entrar no sistema
+                    <ArrowRight size={18} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="mt-6 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
+              Esta é uma simulação visual para o MVP. A autenticação biométrica
+              real poderá ser integrada posteriormente.
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
