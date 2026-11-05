@@ -7,12 +7,12 @@ import {
 
 type NextShipmentCardProps = {
   yard: string;
-  dock: string;
+  stage: string;
 };
 
 export default function NextShipmentCard({
   yard,
-  dock,
+  stage,
 }: NextShipmentCardProps) {
   return (
     <Link
@@ -44,8 +44,8 @@ export default function NextShipmentCard({
         </div>
 
         <div className="rounded-xl bg-slate-50 p-3">
-          <p className="text-xs text-slate-500">Doca</p>
-          <p className="mt-1 font-bold text-slate-700">{dock}</p>
+          <p className="text-xs text-slate-500">Etapa atual</p>
+          <p className="mt-1 font-bold text-slate-700">{stage}</p>
         </div>
       </div>
 

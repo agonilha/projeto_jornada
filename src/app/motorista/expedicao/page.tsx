@@ -1,3 +1,4 @@
+import ShipmentProgress from "@/components/motorista/ShipmentProgress";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -155,41 +156,7 @@ export default async function ExpedicaoMotoristaPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-bold text-slate-800">
-                Progresso do carregamento
-              </h2>
-
-              <span className="text-2xl font-bold text-sky-700">
-                {expedicao.loadingProgress}%
-              </span>
-            </div>
-
-            <div
-              role="progressbar"
-              aria-label="Progresso do carregamento"
-              aria-valuenow={expedicao.loadingProgress}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              className="mt-5 h-4 overflow-hidden rounded-full bg-slate-200"
-            >
-              <div
-                className="h-full rounded-full bg-sky-600 transition-all"
-                style={{
-                  width: `${Math.min(
-                    100,
-                    Math.max(0, expedicao.loadingProgress)
-                  )}%`,
-                }}
-              />
-            </div>
-
-            <p className="mt-4 text-sm text-slate-500">
-              O progresso será atualizado pela equipe
-              responsável pelo carregamento.
-            </p>
-          </section>
+          <ShipmentProgress progress={expedicao.loadingProgress} />
         </>
       )}
     </main>

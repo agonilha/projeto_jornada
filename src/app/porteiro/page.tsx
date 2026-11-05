@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/auth";
@@ -36,14 +37,22 @@ export default async function PorteiroPage() {
         </header>
 
         <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <Link
+            href="/porteiro/entrada"
+            className="block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-sky-300 hover:shadow-md"
+          >
             <h2 className="font-semibold text-slate-900">
               Registrar entrada
             </h2>
+
             <p className="mt-2 text-sm text-slate-600">
-              Registrar a chegada de veículos e motoristas.
+              Leia o QR Code do motorista e consulte seu pátio de destino.
             </p>
-          </div>
+
+            <p className="mt-4 text-sm font-semibold text-sky-700">
+              Abrir leitor de QR Code →
+            </p>
+          </Link>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h2 className="font-semibold text-slate-900">

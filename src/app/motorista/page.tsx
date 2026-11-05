@@ -107,6 +107,18 @@ export default async function DriverHomePage() {
 
   const veiculo = user.driverProfile.vehicles[0];
 
+  const etapas: Record<number, string> = {
+    0: "Pedido recebido",
+    25: "Em separação",
+    50: "Aguardando transporte",
+    75: "Enviada à doca",
+    100: "Aguardando motorista",
+  };
+
+  const etapaAtual = proximaExpedicao
+    ? etapas[proximaExpedicao.loadingProgress] ?? "Etapa não definida"
+    : "Sem expedição";
+
   return (
     <main className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div>
@@ -131,11 +143,7 @@ export default async function DriverHomePage() {
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <NextShipmentCard
           yard={proximaExpedicao?.yard.name ?? "Nenhuma expedição"}
-          dock={
-            proximaExpedicao
-              ? proximaExpedicao.status.replaceAll("_", " ")
-              : "Aguardando"
-          }
+          stage={etapaAtual}
         />
 
         <LoadingHistoryCard
