@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createUser, type CreateUserState } from "./actions";
 
 const initialState: CreateUserState = {
@@ -16,6 +16,7 @@ const inputClassName =
   "w-full rounded-xl border border-slate-400 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-700 placeholder:opacity-100 shadow-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-200";
 
 export default function UserForm({ isAdmin }: UserFormProps) {
+  const [perfilSelecionado, setPerfilSelecionado] = useState("");
   const [state, formAction, isPending] = useActionState(
     createUser,
     initialState,
@@ -76,7 +77,8 @@ export default function UserForm({ isAdmin }: UserFormProps) {
           id="role"
           name="role"
           required
-          defaultValue=""
+          value={perfilSelecionado}
+          onChange={(event) => setPerfilSelecionado(event.target.value)}
           className={`${inputClassName} cursor-pointer`}
         >
           <option value="" disabled>
@@ -90,8 +92,65 @@ export default function UserForm({ isAdmin }: UserFormProps) {
           )}
 
           <option value="PORTEIRO">Porteiro</option>
+
+          {isAdmin && (
+            <option value="MOTORISTA">Motorista</option>
+          )}
         </select>
       </div>
+
+      {perfilSelecionado === "MOTORISTA" && (
+        <div className="space-y-5 rounded-xl border border-sky-200 bg-sky-50 p-4">
+          <div>
+            <h3 className="font-semibold text-sky-950">
+              Dados do motorista
+            </h3>
+
+            <p className="mt-1 text-sm text-sky-800">
+              Informações necessárias para criar o perfil do motorista.
+            </p>
+          </div>
+
+          <div>
+            <label
+              htmlFor="cpf"
+              className="mb-2 block text-sm font-semibold text-slate-900"
+            >
+              CPF
+            </label>
+
+            <input
+              id="cpf"
+              name="cpf"
+              type="text"
+              required
+              inputMode="numeric"
+              maxLength={14}
+              placeholder="000.000.000-00"
+              className={inputClassName}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="phone"
+              className="mb-2 block text-sm font-semibold text-slate-900"
+            >
+              Telefone (opcional)
+            </label>
+
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              maxLength={20}
+              autoComplete="tel"
+              placeholder="(11) 99999-9999"
+              className={inputClassName}
+            />
+          </div>
+        </div>
+      )}
 
       <div>
         <label

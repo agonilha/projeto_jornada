@@ -83,7 +83,7 @@ export async function createUser(
 
   const allowedRoles: UserRole[] =
     currentRole === "ADMIN"
-      ? ["ADMIN", "SUPERVISOR", "PORTEIRO"]
+      ? ["ADMIN", "SUPERVISOR", "PORTEIRO", "MOTORISTA"]
       : ["PORTEIRO"];
 
   if (!allowedRoles.includes(requestedRole)) {
@@ -91,6 +91,50 @@ export async function createUser(
       success: false,
       message: "Você não tem permissão para criar esse perfil.",
     };
+  }
+
+  let cpf = "";
+  let phone: string | null = null;
+
+  if (requestedRole === "MOTORISTA") {
+    const cpfValue = formData.get("cpf");
+    const phoneValue = formData.get("phone");
+
+    cpf =
+      typeof cpfValue === "string"
+        ? cpfValue.replace(/\D/g, "")
+        : "";
+
+    phone =
+      typeof phoneValue === "string"
+        ? phoneValue.trim() || null
+        : null;
+
+    if (cpf.length !== 11) {
+      return {
+        success: false,
+        message: "O CPF deve conter 11 dígitos.",
+      };
+    }
+
+    if (phone && phone.length > 20) {
+      return {
+        success: false,
+        message: "O telefone deve ter no máximo 20 caracteres.",
+      };
+    }
+
+    const motoristaExistente = await prisma.driverProfile.findUnique({
+      where: { cpf },
+      select: { id: true },
+    });
+
+    if (motoristaExistente) {
+      return {
+        success: false,
+        message: "Já existe um motorista cadastrado com esse CPF.",
+      };
+    }
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -114,6 +158,17 @@ export async function createUser(
         email,
         password: hashedPassword,
         role: requestedRole,
+
+        ...(requestedRole === "MOTORISTA"
+          ? {
+              driverProfile: {
+                create: {
+                  cpf,
+                  phone,
+                },
+              },
+            }
+          : {}),
       },
     });
   } catch (error) {
@@ -127,7 +182,7 @@ export async function createUser(
     ) {
       return {
         success: false,
-        message: "Já existe um usuário cadastrado com esse e-mail.",
+        message: "Já existe um usuário cadastrado com esse e-mail ou CPF.",
       };
     }
 

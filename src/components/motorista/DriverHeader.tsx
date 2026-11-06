@@ -82,33 +82,41 @@ export default function DriverHeader() {
   return (
     <>
       <header className="bg-[#0B1424] text-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          {/* Identificação do motorista */}
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-sky-600">
               <Truck size={26} />
             </div>
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-slate-300">
                 Bem-vindo,
               </p>
-              <h1 className="truncate text-lg font-bold sm:text-xl">
+
+              <h1 className="mt-0.5 break-words text-lg font-bold leading-tight sm:text-xl">
                 {nome}
               </h1>
-              <p className="mt-0.5 text-[11px] text-slate-400">
+
+              <p className="mt-1 text-xs text-slate-400">
                 Área do motorista
               </p>
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {/* Ações do motorista */}
+          <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-3 sm:flex sm:shrink-0 sm:border-0 sm:pt-0">
+
             <button
               type="button"
               onClick={abrirQRCode}
               aria-label="Mostrar meu QR Code"
-              className="flex size-10 items-center justify-center rounded-xl bg-white/10 transition hover:bg-white/20 sm:size-11"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-2 transition hover:bg-white/20 sm:size-11 sm:px-0"
             >
-              <QrCode size={21} />
+              <QrCode size={20} />
+              <span className="text-xs font-medium sm:hidden">
+                QR Code
+              </span>
             </button>
 
             <button
@@ -117,19 +125,26 @@ export default function DriverHeader() {
               onClick={() =>
                 alert("Notificações serão implementadas posteriormente.")
               }
-              className="flex size-10 items-center justify-center rounded-xl bg-white/10 transition hover:bg-white/20 sm:size-11"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-2 transition hover:bg-white/20 sm:size-11 sm:px-0"
             >
-              <Bell size={21} />
+              <Bell size={20} />
+              <span className="text-xs font-medium sm:hidden">
+                Avisos
+              </span>
             </button>
 
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: "/" })}
               aria-label="Sair"
-              className="flex size-10 items-center justify-center rounded-xl bg-white/10 transition hover:bg-white/20 sm:size-11"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-2 transition hover:bg-white/20 sm:size-11 sm:px-0"
             >
               <LogOut size={20} />
+              <span className="text-xs font-medium sm:hidden">
+                Sair
+              </span>
             </button>
+
           </div>
         </div>
       </header>
