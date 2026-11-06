@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, LoaderCircle } from "lucide-react";
 
-import { atualizarCarregamento } from "@/app/supervisor/actions";
+import {
+  atualizarCarregamento,
+  finalizarExpedicao,
+} from "@/app/supervisor/actions";
 
 type LoadingProgressFormProps = {
   expedicaoId: string;
@@ -80,6 +83,36 @@ export default function LoadingProgressForm({
     }
 
     return "border-slate-300 bg-slate-300";
+  }
+
+  async function confirmarFinalizacao() {
+    if (
+      !window.confirm(
+        "Deseja finalizar esta expedição? Ela será enviada ao histórico do motorista."
+      )
+    ) {
+      return;
+    }
+  
+    setSalvando(true);
+    setMensagem("");
+    setSucesso(false);
+  
+    try {
+      const resultado = await finalizarExpedicao(expedicaoId);
+  
+      setMensagem(resultado.message);
+      setSucesso(resultado.success);
+  
+      if (resultado.success) {
+        router.refresh();
+      }
+    } catch {
+      setMensagem("Não foi possível finalizar a expedição.");
+      setSucesso(false);
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
@@ -231,6 +264,34 @@ export default function LoadingProgressForm({
           Esta expedição está encerrada e não pode ser editada.
         </p>
       )}
+
+      {!encerrada &&
+        progressoAtual === 100 &&
+        progresso === 100 && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+            <h4 className="font-bold text-emerald-900">
+              Carregamento em 100%
+            </h4>
+      
+            <p className="mt-2 text-sm text-emerald-800">
+              A carga está aguardando o motorista.
+              Quando a operação estiver concluída,
+              finalize a expedição.
+            </p>
+      
+            <button
+              type="button"
+              onClick={confirmarFinalizacao}
+              disabled={salvando}
+              className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:opacity-50"
+            >
+              <CheckCircle2 size={20} />
+              {salvando
+                ? "Finalizando..."
+                : "Finalizar expedição"}
+            </button>
+          </div>
+        )}
 
       {mensagem && (
         <p

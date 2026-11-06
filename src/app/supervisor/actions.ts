@@ -122,3 +122,81 @@ export async function atualizarCarregamento(
     };
   }
 }
+
+export async function finalizarExpedicao(
+  expedicaoId: string
+): Promise<ResultadoAtualizacao> {
+  const session = await getServerSession(authOptions);
+
+  if (
+    !session?.user?.email ||
+    !["SUPERVISOR", "ADMIN"].includes(session.user.role)
+  ) {
+    return {
+      success: false,
+      message: "Você não tem permissão para finalizar expedições.",
+    };
+  }
+
+  const usuario = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (
+    !usuario ||
+    !usuario.isActive ||
+    !["SUPERVISOR", "ADMIN"].includes(usuario.role)
+  ) {
+    return {
+      success: false,
+      message: "Usuário não autorizado.",
+    };
+  }
+
+  if (!expedicaoId) {
+    return {
+      success: false,
+      message: "Expedição inválida.",
+    };
+  }
+
+  try {
+    const resultado = await prisma.shipment.updateMany({
+      where: {
+        id: expedicaoId,
+        loadingProgress: 100,
+        status: {
+          notIn: ["FINALIZADA", "CANCELADA"],
+        },
+      },
+      data: {
+        status: "FINALIZADA",
+      },
+    });
+
+    if (resultado.count === 0) {
+      return {
+        success: false,
+        message:
+          "A expedição não está em 100% ou já foi encerrada.",
+      };
+    }
+
+    revalidatePath("/supervisor");
+    revalidatePath("/motorista");
+    revalidatePath("/motorista/expedicao");
+    revalidatePath("/motorista/historico");
+
+    return {
+      success: true,
+      message: "Expedição finalizada com sucesso!",
+    };
+  } catch (error) {
+    console.error("Erro ao finalizar expedição:", error);
+
+    return {
+      success: false,
+      message: "Não foi possível finalizar a expedição.",
+    };
+  }
+}
